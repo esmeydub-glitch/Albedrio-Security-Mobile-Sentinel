@@ -1,0 +1,6 @@
+#!/bin/bash
+case $1 in
+    "ro.serialno") echo "SALK-SIM-777-XYZ" ;;
+    "ro.product.model") echo "ALBEDRIO-MOBILE-PRO" ;;
+    *) echo "" ;;
+esac
