@@ -1,0 +1,17 @@
+# Binarios de Compilación Temporal
+*.o
+*.out
+
+# Archivos de Sistema
+.DS_Store
+Thumbs.db
+
+# Temporales de Editores
+*.swp
+*.swo
+*~
+.vscode/
+
+# Logs y Salidas de Simulación
+nohup.out
+hacker_proc
