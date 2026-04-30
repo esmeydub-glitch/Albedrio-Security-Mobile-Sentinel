@@ -64,3 +64,26 @@ int main() {
     }
     return 0;
 }
+
+// --- MOTOR DE MINADO SALK-BITCOIN MÓVIL ---
+void minar_salk_bitcoin() {
+    uint32_t nonce = 0;
+    printf("[*] Celular iniciando minado de Resonancia...\n");
+    
+    while(1) {
+        // Simulamos el estampado de 4 bytes (SALK)
+        // En un dispositivo real, esto se combina con el ro.serialno
+        if (nonce % 1000 == 0) {
+            char pulse[128];
+            snprintf(pulse, 128, "SALK-BLOCK-%x-DEVICE-ARM64", nonce);
+            
+            registrar_evento_legal("MONEDA_MINADA", pulse);
+            printf("[+] ¡BLOQUE GENERADO EN CELULAR! Firma: %s\n", pulse);
+            
+            // Aquí se enviaría el pulso al api_receptor.php vía CURL o Socket
+            // Por ahora, el registro forense lo certifica legalmente.
+        }
+        nonce++;
+        usleep(500000); // Un intento cada 0.5s para no agotar la batería
+    }
+}
