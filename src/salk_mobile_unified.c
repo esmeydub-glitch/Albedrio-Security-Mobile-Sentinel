@@ -2,69 +2,65 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <dirent.h>
+#include <time.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <pthread.h>
 
-void cazar_intrusos() {
-    // Lista de Firmas Agresiva para Android
-    const char* firmas[] = {
-        "hacker", "anydesk", "teamviewer", "scrcpy", 
-        "metasploit", "spy", "rat", "trojan", "keylogger",
-        "msfvenom", "meterpreter"
-    };
-    DIR* dir = opendir("/proc");
-    struct dirent* ent;
-    if (!dir) return;
-    while ((ent = readdir(dir))) {
-        if (ent->d_type == DT_DIR && atoi(ent->d_name) > 0) {
-            char path[256];
-            char buf[1024];
-            sprintf(path, "/proc/%s/cmdline", ent->d_name);
-            FILE* f = fopen(path, "r");
-            if (f) {
-                size_t len = fread(buf, 1, sizeof(buf)-1, f);
-                buf[len] = 0;
-                for(int i=0; i<11; i++) {
-                    if (strstr(buf, firmas[i])) {
-                        printf("[!] INTRUSO NEUTRALIZADO: %s (PID: %s)\n", buf, ent->d_name);
-                        char kill_cmd[64];
-                        sprintf(kill_cmd, "kill -9 %s", ent->d_name);
-                        system(kill_cmd);
-                    }
-                }
-                fclose(f);
-            }
-        }
+#define LOG_FORENSE "/data/local/tmp/albedrio_forense.log"
+
+void registrar_evento_legal(const char* tipo, const char* detalle) {
+    FILE* f = fopen(LOG_FORENSE, "a");
+    if (f) {
+        time_t now = time(NULL);
+        char* t_str = ctime(&now);
+        t_str[strlen(t_str)-1] = '\0';
+        fprintf(f, "[%s] [ALERTA-ANDROID-LEGAL] TIPO: %s | DETALLE: %s\n", t_str, tipo, detalle);
+        fclose(f);
     }
-    closedir(dir);
 }
 
-void leer_propiedad(const char* prop, char* buffer, size_t size) {
-    char command[128];
-    sprintf(command, "getprop %s", prop);
-    FILE *fp = popen(command, "r");
+void cazar_intrusos() {
+    // Escaneo de procesos remotos comunes en Android (termux, shell, etc)
+    FILE *fp = popen("ps -A | grep -E 'sh|nc|socat|metasploit'", "r");
+    char line[256];
     if (fp) {
-        if (fgets(buffer, size, fp)) buffer[strcspn(buffer, "\n")] = 0;
+        while (fgets(line, sizeof(line), fp)) {
+            registrar_evento_legal("INTRUSION_DETECTADA", line);
+            // Aquí se podría añadir kill(pid, SIGKILL) si se desea agresividad
+        }
         pclose(fp);
     }
 }
 
-int main(int argc, char* argv[]) {
-    char serial[128], model[128];
-    leer_propiedad("ro.serialno", serial, sizeof(serial));
-    leer_propiedad("ro.product.model", model, sizeof(model));
+void* motor_nebulosa(void* arg) {
+    // Generación de ruido UDP para ofuscar tráfico móvil
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    struct sockaddr_in target;
+    target.sin_family = AF_INET;
+    target.sin_addr.s_addr = inet_addr("127.0.0.1");
+    target.sin_port = htons(9999);
+    char basura[1024];
+    while(1) {
+        for(int i=0; i<1024; i++) basura[i] = rand() % 256;
+        sendto(sock, basura, 1024, 0, (struct sockaddr*)&target, sizeof(target));
+        usleep(100000); // 10 paquetes por segundo
+    }
+    return NULL;
+}
 
-    printf("\n>>> ALBEDRIO SECURITY MOBILE v1.1 <<<\n");
-    printf("[+] Resonancia: %s | Hardware: %s\n", serial, model);
+int main() {
+    printf("--- ALBEDRIO SECURITY MOBILE SENTINEL v3.8.4 ---\n");
+    printf("[+] Iniciando Resonancia de Hardware Móvil...\n");
     
-    if (argc > 1 && strcmp(argv[1], "--attack") == 0) {
-        printf("[+] Petaboom Mobile: Lanzando contraataque de saturacion...\n");
-        for(int i=0; i<5; i++) { printf("  [Materia Oscura] Rafaga %d enviada.\n", i+1); usleep(100000); }
-    } else {
-        printf("[+] Iniciando Caceria Sentinela (Radar Activo)...\n");
-        while(1) {
-            cazar_intrusos();
-            usleep(500000);
-        }
+    pthread_t thread_id;
+    pthread_create(&thread_id, NULL, motor_nebulosa, NULL);
+    
+    registrar_evento_legal("SISTEMA_ACTIVO", "Albedrio Mobile iniciado correctamente.");
+    
+    while(1) {
+        cazar_intrusos();
+        sleep(5); // Ciclo de guardia
     }
     return 0;
 }

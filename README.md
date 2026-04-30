@@ -1,7 +1,14 @@
 # Albedrío Security Mobile Sentinel
 ### Advanced Native Protection for Android (AArch64 / ARMv7)
+**Created by Victor Manuel Gutierrez Flores (Esme)**
 
 **Built in Pure C - Zero Dependencies - Injection Ready.**
+
+---
+
+## 🚀 Two-Tier Defense Strategy
+1. **SALK LITE (Play Store Target):** Passive shield and hardware resonance. Acts as a secure bridge.
+2. **SALK FULL (F-Droid / GitHub):** Includes Petaboom offensive module, Active Sentinel hunting, and deep kernel policies.
 
 ---
 
@@ -32,6 +39,11 @@ The system is deployed as a standalone native binary via ADB or direct shell inj
 
 # Albedrío Security Mobile Sentinel [ESPAÑOL]
 ### Protección Nativa Avanzada para Android
+**Creado por Victor Manuel Gutierrez Flores (Esme)**
+
+## 🚀 Estrategia de Defensa en Dos Capas
+1. **SALK LITE (Play Store):** Escudo pasivo y resonancia. Sirve como puente seguro.
+2. **SALK FULL (F-Droid / GitHub):** Incluye Petaboom ofensivo, cacería activa del Sentinela y políticas profundas de Kernel.
 
 ## 📜 Filosofía
 Ecosistema diseñado para recuperar dispositivos Android comprometidos mediante inyección de binarios puros.
